@@ -2,45 +2,72 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="A tribute page for Steve Harrington from Stranger Things." />
-    <meta name="theme-color" content="#000000" />
-    <title>Steve Harrington Tribute</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
+    <script src="script.js" type="text/javascript"></script>
+    <title>Vitamin 3: CSS Layout</title>
   </head>
   <body>
-    <header>
-      <h1>Steve Harrington Tribute</h1>
-    </header>
-
+    <aside id="sidebar" data-testid="sidebar">
+      <div>
+        <div>
+          <button id="sidebar-button" data-testid="sidebar-button">›</button>
+        </div>
+        <div>
+          <h3>Pencil Sharpeners</h3>
+          <ul>
+            <li><a>Prisma Premier</a></li>
+            <li><a>Staedtler Mars 501</a></li>
+            <li><a>Carl Angel-5</a></li>
+          </ul>
+        </div>
+      </div>
+    </aside>
     <main>
-      <ul>
-        <li>Home</li>
-        <li>About</li>
-        <li>Contact</li>
-      </ul>
-      <h3>Contents</h3>
-      <ul>
-        <li>Fictional Character Biography</li>
-        <li>In Popular Culture</li>
-        <li>Reception</li>
-        <li>References</li>
-      </ul>
+      <h1>Pencil Point Perfection</h1>
+      <h2>Vihan's Favorite Pencil Sharpeners Ranked</h2>
 
-      <section id="link">
-        <h2>Steve Harrington</h2>
-            <a href="https://en.wikipedia.org/wiki/Steve_Harrington">Visit Steve</a>
-
-      </section>
-
-      <section id="Meet">
-        <h2>Meet Steve</h2>
-        <img src="Steve_Harrington-d80abfed58717f943645298137f253fa.png" alt="Steve Harrington" height="250" />
-      </section>
-
+      <div class="exercises">
+        <div class="exercise exercise-1">
+          <div>
+            <label for="task-name">Task Name</label>
+            <input
+              type="text"
+              id="task-name"
+              name="task-name"
+              placeholder="Pick up Trash"
+            />
+          </div>
+          <button id="add-todo" data-testid="add-todo">Add Todo</button>
+          <ul id="todo-list">
+            <li>Do homework</li>
+            <li>Go to gym</li>
+          </ul>
+        </div>
+        <div class="exercise exercise-2">
+          <div>
+            <label for="first-name">First Name</label>
+            <input
+              type="text"
+              id="first-name"
+              name="first-name"
+              placeholder="Taylor"
+            />
+          </div>
+          <div>
+            <label for="last-name">Last Name</label>
+            <input
+              type="text"
+              id="last-name"
+              name="last-name"
+              placeholder="Swift"
+            />
+          </div>
+          <p id="message" data-testid="message">
+            Type your name to see a message!
+          </p>
+        </div>
+      </div>
     </main>
-
-    <footer>
-      <p>© Zahm Siyed. All rights reserved.</p>
-    </footer>
   </body>
 </html>
