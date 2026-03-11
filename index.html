@@ -1,73 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zahm Siyed Profile</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="script.js" type="text/javascript"></script>
-    <title>Vitamin 3: CSS Layout</title>
+    <script src="script.js" defer></script>
   </head>
   <body>
-    <aside id="sidebar" data-testid="sidebar">
-      <div>
-        <div>
-          <button id="sidebar-button" data-testid="sidebar-button">›</button>
-        </div>
-        <div>
-          <h3>Pencil Sharpeners</h3>
-          <ul>
-            <li><a>Prisma Premier</a></li>
-            <li><a>Staedtler Mars 501</a></li>
-            <li><a>Carl Angel-5</a></li>
-          </ul>
-        </div>
-      </div>
-    </aside>
-    <main>
-      <h1>Pencil Point Perfection</h1>
-      <h2>Vihan's Favorite Pencil Sharpeners Ranked</h2>
+    <header>
+      <h1>Zahm Siyed</h1>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="projects.html">Projects</a>
+      </nav>
+    </header>
 
-      <div class="exercises">
-        <div class="exercise exercise-1">
-          <div>
-            <label for="task-name">Task Name</label>
-            <input
-              type="text"
-              id="task-name"
-              name="task-name"
-              placeholder="Pick up Trash"
-            />
-          </div>
-          <button id="add-todo" data-testid="add-todo">Add Todo</button>
-          <ul id="todo-list">
-            <li>Do homework</li>
-            <li>Go to gym</li>
-          </ul>
+    <main>
+      <section class="profile-box">
+        <img
+          class="banner"
+          src="https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=1400&q=80"
+          alt="Campus skyline"
+        />
+
+        <h2>Computer Science Student at UC Berkeley</h2>
+        <p>Berkeley, California</p>
+        <p>500+ connections</p>
+        <button id="availability-toggle" type="button">Show status</button>
+        <p id="availability-note">Click the button to see my current status.</p>
+      </section>
+
+      <section>
+        <h2>Introduction</h2>
+        <p>
+          Hi, my name is Zahm Siyed. I made this website to look like a simple LinkedIn profile.
+        </p>
+        <p>
+          I am interested in computer science, cybersecurity, and learning how technology can solve
+          real problems.
+        </p>
+      </section>
+
+      <section>
+        <h2>Hobbies</h2>
+        <ul>
+          <li>Going to the gym</li>
+          <li>Photography</li>
+          <li>Trying new coffee shops</li>
+          <li>Reading about business and technology</li>
+        </ul>
+
+        <div class="image-row">
+          <img
+            src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=700&q=80"
+          />
+          <img
+            src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=700&q=80"
+          />
+          <img
+            src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=700&q=80"
+          />
         </div>
-        <div class="exercise exercise-2">
-          <div>
-            <label for="first-name">First Name</label>
-            <input
-              type="text"
-              id="first-name"
-              name="first-name"
-              placeholder="Taylor"
-            />
-          </div>
-          <div>
-            <label for="last-name">Last Name</label>
-            <input
-              type="text"
-              id="last-name"
-              name="last-name"
-              placeholder="Swift"
-            />
-          </div>
-          <p id="message" data-testid="message">
-            Type your name to see a message!
-          </p>
-        </div>
-      </div>
+      </section>
+
+      <section>
+        <h2>Education</h2>
+        <p>University of California, Berkeley - Computer Science</p>
+        <p>Diamond Bar High School</p>
+      </section>
+
+      <section>
+        <h2>Contact Form</h2>
+        <form>
+          <label for="name">Name:</label>
+          <input id="name" name="name" type="text" />
+
+          <label for="email">Email:</label>
+          <input id="email" name="email" type="email" />
+
+          <label for="message">Message:</label>
+          <textarea id="message" name="message" rows="4"></textarea>
+
+          <button type="submit">Submit</button>
+        </form>
+      </section>
     </main>
   </body>
 </html>
