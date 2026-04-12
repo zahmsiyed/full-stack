@@ -14,7 +14,7 @@ interface Exercise {
   id: number;
   name: string;
   previousBest: string;
-  sets: Set[];
+  sets: WorkoutSet[];
 }
 
 const initialExercises: Exercise[] = [
