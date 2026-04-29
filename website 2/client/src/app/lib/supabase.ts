@@ -8,4 +8,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error("Missing Supabase environment variables.");
 }
 
+if (supabaseAnonKey.startsWith("sb_secret_")) {
+  throw new Error(
+    "VITE_SUPABASE_ANON_KEY must be a publishable/anon key, not a Supabase secret key."
+  );
+}
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
