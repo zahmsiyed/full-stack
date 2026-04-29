@@ -5,6 +5,10 @@ interface ApiErrorResponse {
   message?: string;
 }
 
+interface MessageLikeError {
+  message?: unknown;
+}
+
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000/api",
   headers: {
@@ -29,6 +33,14 @@ export function getErrorMessage(
 
   if (error instanceof Error && error.message) {
     return error.message;
+  }
+
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    typeof (error as MessageLikeError).message === "string"
+  ) {
+    return (error as { message: string }).message;
   }
 
   return fallback;

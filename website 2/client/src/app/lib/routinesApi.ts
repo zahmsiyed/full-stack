@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { supabase } from "./supabase";
 
 export interface Routine {
   id: number;
@@ -17,23 +17,61 @@ export interface RoutineInput {
   lastPerformed: string;
 }
 
-interface ApiResponse<T> {
-  data: T;
+interface RoutineRow {
+  id: number;
+  name: string;
+  exercises: number;
+  duration: string;
+  last_performed: string;
+  created_at: string;
+  updated_at: string;
 }
 
-async function readData<T>(request: Promise<{ data: ApiResponse<T> }>) {
-  const response = await request;
-  return response.data.data;
+function mapRoutine(row: RoutineRow): Routine {
+  return {
+    id: row.id,
+    name: row.name,
+    exercises: row.exercises,
+    duration: row.duration,
+    lastPerformed: row.last_performed,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
 }
 
 export async function fetchRoutines() {
-  return readData(api.get<ApiResponse<Routine[]>>("/routines"));
+  const { data, error } = await supabase
+    .from("routines")
+    .select("*")
+    .order("id", { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []).map(mapRoutine);
 }
 
 export async function fetchRoutine(id: number) {
-  return readData(api.get<ApiResponse<Routine>>(`/routines/${id}`));
+  const { data, error } = await supabase
+    .from("routines")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) throw error;
+  return mapRoutine(data);
 }
 
 export async function createRoutine(input: RoutineInput) {
-  return readData(api.post<ApiResponse<Routine>>("/routines", input));
+  const { data, error } = await supabase
+    .from("routines")
+    .insert({
+      name: input.name,
+      exercises: input.exercises,
+      duration: input.duration,
+      last_performed: input.lastPerformed,
+    })
+    .select("*")
+    .single();
+
+  if (error) throw error;
+  return mapRoutine(data);
 }
