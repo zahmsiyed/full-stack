@@ -10,6 +10,11 @@ import type { RoutineInput } from "../types.js";
 
 const router = Router();
 
+function parseId(idParam: string) {
+  const id = Number(idParam);
+  return Number.isInteger(id) && id > 0 ? id : null;
+}
+
 function parseRoutineInput(body: unknown): { data?: RoutineInput; error?: string } {
   const input = body as Partial<RoutineInput>;
 
@@ -44,7 +49,13 @@ router.get("/", (_req, res) => {
 });
 
 router.get("/:id", (req, res) => {
-  const routine = getRoutineById(Number(req.params.id));
+  const id = parseId(req.params.id);
+
+  if (id === null) {
+    return res.status(400).json({ error: "Routine id must be a positive number." });
+  }
+
+  const routine = getRoutineById(id);
 
   if (!routine) {
     return res.status(404).json({ error: "Routine not found." });
@@ -65,13 +76,19 @@ router.post("/", (req, res) => {
 });
 
 router.put("/:id", (req, res) => {
+  const id = parseId(req.params.id);
+
+  if (id === null) {
+    return res.status(400).json({ error: "Routine id must be a positive number." });
+  }
+
   const { data, error } = parseRoutineInput(req.body);
 
   if (!data) {
     return res.status(400).json({ error });
   }
 
-  const routine = updateRoutine(Number(req.params.id), data);
+  const routine = updateRoutine(id, data);
 
   if (!routine) {
     return res.status(404).json({ error: "Routine not found." });
@@ -81,13 +98,19 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  const removed = deleteRoutine(Number(req.params.id));
+  const id = parseId(req.params.id);
+
+  if (id === null) {
+    return res.status(400).json({ error: "Routine id must be a positive number." });
+  }
+
+  const removed = deleteRoutine(id);
 
   if (!removed) {
     return res.status(404).json({ error: "Routine not found." });
   }
 
-  return res.json({ data: { id: Number(req.params.id) } });
+  return res.json({ data: { id } });
 });
 
 export { router as routinesRouter };

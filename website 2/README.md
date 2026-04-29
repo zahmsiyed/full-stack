@@ -5,8 +5,10 @@ This is a code bundle for workoutapp. The original project is available at https
 
 ## Project Structure
 
-- `client/`: Vite + React + TypeScript frontend
+- `client/`: canonical Vite + React + TypeScript frontend
 - `server/`: Express + TypeScript + SQLite backend
+- `src/`: legacy leftover path and not part of the active frontend anymore
+- `my-app/`: unrelated older scaffold and not part of the active client/server app
 
 ## Running the code
 
@@ -16,12 +18,13 @@ Install dependencies in the root, client, and server packages:
 - `npm --prefix client install`
 - `npm --prefix server install`
 
-Run the frontend:
+Run both client and server together:
+
+- `npm run dev`
+
+Or run them separately:
 
 - `npm run dev:client`
-
-Run the backend:
-
 - `npm run dev:server`
 
 The frontend expects the API at `http://localhost:4000/api` by default. Override this with `VITE_API_BASE_URL` in the client if needed.

@@ -1,11 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { AlertCircle, Play, Plus, Quote } from "lucide-react";
+import { Play, Plus, Quote } from "lucide-react";
 import { motion } from "motion/react";
 import { PageHeader } from "../components/PageHeader";
 import { PageShell } from "../components/PageShell";
+import { StatusCard } from "../components/StatusCard";
 import { SurfaceCard } from "../components/SurfaceCard";
+import { getErrorMessage } from "../lib/api";
 
 const recentWorkouts = [
   {
@@ -48,6 +50,7 @@ export function Dashboard() {
   useEffect(() => {
     let isMounted = true;
 
+    // Keep one simple HTTPS example on the dashboard for the class rubric.
     async function loadQuote() {
       try {
         setQuoteLoading(true);
@@ -59,9 +62,11 @@ export function Dashboard() {
         if (isMounted) {
           setQuote(response.data);
         }
-      } catch {
+      } catch (error) {
         if (isMounted) {
-          setQuoteError("Unable to load the demo HTTPS quote.");
+          setQuoteError(
+            getErrorMessage(error, "Unable to load the demo HTTPS quote.")
+          );
         }
       } finally {
         if (isMounted) {
@@ -151,19 +156,10 @@ export function Dashboard() {
         </div>
 
         {quoteLoading && (
-          <SurfaceCard className="p-5">
-            <p className="text-sm text-muted-foreground">Loading quote...</p>
-          </SurfaceCard>
+          <StatusCard tone="loading" message="Loading quote..." />
         )}
 
-        {quoteError && (
-          <SurfaceCard className="p-5 border-destructive/30">
-            <div className="flex items-center gap-3 text-destructive">
-              <AlertCircle className="w-5 h-5" />
-              <p className="text-sm">{quoteError}</p>
-            </div>
-          </SurfaceCard>
-        )}
+        {quoteError && <StatusCard tone="error" message={quoteError} />}
 
         {!quoteLoading && !quoteError && quote && (
           <SurfaceCard className="p-5">

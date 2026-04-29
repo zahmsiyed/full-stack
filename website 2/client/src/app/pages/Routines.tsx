@@ -1,11 +1,13 @@
 import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
-import { AlertCircle, LoaderCircle, MoreVertical, Play, Plus } from "lucide-react";
+import { LoaderCircle, MoreVertical, Play, Plus } from "lucide-react";
 import { motion } from "motion/react";
 import { Link } from "react-router";
 import { PageHeader } from "../components/PageHeader";
 import { PageShell } from "../components/PageShell";
+import { StatusCard } from "../components/StatusCard";
 import { SurfaceCard } from "../components/SurfaceCard";
+import { getErrorMessage } from "../lib/api";
 import {
   createRoutine,
   fetchRoutines,
@@ -31,6 +33,7 @@ export function Routines() {
   useEffect(() => {
     let isMounted = true;
 
+    // Load the saved routines once when the page opens.
     async function loadRoutines() {
       try {
         setLoading(true);
@@ -40,9 +43,11 @@ export function Routines() {
         if (isMounted) {
           setRoutines(data);
         }
-      } catch {
+      } catch (error) {
         if (isMounted) {
-          setError("Unable to load routines from the server.");
+          setError(
+            getErrorMessage(error, "Unable to load routines from the server.")
+          );
         }
       } finally {
         if (isMounted) {
@@ -58,8 +63,14 @@ export function Routines() {
     };
   }, []);
 
+  // Keep form updates simple so each input stays controlled.
   function updateForm<K extends keyof RoutineInput>(field: K, value: RoutineInput[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function parseExercises(value: string) {
+    const parsedValue = Number(value);
+    return Number.isNaN(parsedValue) || parsedValue < 1 ? 1 : parsedValue;
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -73,14 +84,17 @@ export function Routines() {
     try {
       setIsSubmitting(true);
       setFormError(null);
+      setError(null);
       const created = await createRoutine({
         ...form,
         name: form.name.trim(),
       });
       setRoutines((prev) => [created, ...prev]);
-      setForm(initialForm);
-    } catch {
-      setFormError("Unable to save routine right now.");
+      setForm({ ...initialForm });
+    } catch (error) {
+      setFormError(
+        getErrorMessage(error, "Unable to save routine right now.")
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -117,7 +131,9 @@ export function Routines() {
               type="number"
               min={1}
               value={form.exercises}
-              onChange={(event) => updateForm("exercises", Number(event.target.value))}
+              onChange={(event) =>
+                updateForm("exercises", parseExercises(event.target.value))
+              }
               className="w-full bg-input rounded-xl px-4 py-3 border border-border focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </label>
@@ -147,7 +163,7 @@ export function Routines() {
               {formError && <p className="text-sm text-destructive">{formError}</p>}
               {!formError && (
                 <p className="text-sm text-muted-foreground">
-                  Create a routine and persist it to the Express + SQLite backend.
+                  Create a routine and store it in the backend.
                 </p>
               )}
             </div>
@@ -164,64 +180,64 @@ export function Routines() {
       </SurfaceCard>
 
       {loading && (
-        <SurfaceCard className="p-6 flex items-center gap-3">
-          <LoaderCircle className="w-5 h-5 animate-spin text-primary" />
-          <span className="text-muted-foreground">Loading routines...</span>
-        </SurfaceCard>
+        <StatusCard tone="loading" message="Loading routines..." />
       )}
 
-      {error && (
-        <SurfaceCard className="p-6 border-destructive/30">
-          <div className="flex items-center gap-3 text-destructive">
-            <AlertCircle className="w-5 h-5" />
-            <span>{error}</span>
-          </div>
-        </SurfaceCard>
-      )}
+      {error && <StatusCard tone="error" message={error} />}
 
       {!loading && !error && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {routines.map((routine, index) => (
-            <motion.div
-              key={routine.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.08 }}
-            >
-              <SurfaceCard className="p-6 hover:border-primary/50 transition-all group">
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-lg">{routine.name}</h3>
-                  <button className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                    <MoreVertical className="w-5 h-5" />
-                  </button>
-                </div>
+        <>
+          {routines.length === 0 && (
+            <SurfaceCard className="p-5 mb-4">
+              <p className="text-sm text-muted-foreground">
+                No routines yet. Create your first one above.
+              </p>
+            </SurfaceCard>
+          )}
 
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Exercises</span>
-                    <span>{routine.exercises}</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {routines.map((routine, index) => (
+              <motion.div
+                key={routine.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.08 }}
+              >
+                <SurfaceCard className="p-6 hover:border-primary/50 transition-all group">
+                  <div className="flex items-start justify-between mb-4">
+                    <h3 className="text-lg">{routine.name}</h3>
+                    <button className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                      <MoreVertical className="w-5 h-5" />
+                    </button>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Duration</span>
-                    <span>{routine.duration}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Last performed</span>
-                    <span>{routine.lastPerformed}</span>
-                  </div>
-                </div>
 
-                <Link
-                  to={`/workout/${routine.id}`}
-                  className="w-full bg-primary/10 text-primary rounded-xl px-4 py-2.5 flex items-center justify-center gap-2 hover:bg-primary/20 transition-colors"
-                >
-                  <Play className="w-4 h-4" />
-                  <span>Start Workout</span>
-                </Link>
-              </SurfaceCard>
-            </motion.div>
-          ))}
-        </div>
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Exercises</span>
+                      <span>{routine.exercises}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Duration</span>
+                      <span>{routine.duration}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Last performed</span>
+                      <span>{routine.lastPerformed}</span>
+                    </div>
+                  </div>
+
+                  <Link
+                    to={`/workout/${routine.id}`}
+                    className="w-full bg-primary/10 text-primary rounded-xl px-4 py-2.5 flex items-center justify-center gap-2 hover:bg-primary/20 transition-colors"
+                  >
+                    <Play className="w-4 h-4" />
+                    <span>Start Workout</span>
+                  </Link>
+                </SurfaceCard>
+              </motion.div>
+            ))}
+          </div>
+        </>
       )}
     </PageShell>
   );

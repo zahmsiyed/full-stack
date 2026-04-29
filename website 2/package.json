@@ -6,10 +6,13 @@
     "server"
   ],
   "scripts": {
-    "dev": "echo \"Run npm run dev:client and npm run dev:server in separate terminals\"",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:client": "npm --prefix client run dev",
     "build:client": "npm --prefix client run build",
     "dev:server": "npm --prefix server run dev",
     "start:server": "npm --prefix server run start"
+  },
+  "devDependencies": {
+    "concurrently": "9.1.2"
   }
 }

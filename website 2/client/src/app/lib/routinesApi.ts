@@ -21,12 +21,15 @@ interface ApiResponse<T> {
   data: T;
 }
 
-export async function fetchRoutines() {
-  const response = await api.get<ApiResponse<Routine[]>>("/routines");
+async function readData<T>(request: Promise<{ data: ApiResponse<T> }>) {
+  const response = await request;
   return response.data.data;
 }
 
+export async function fetchRoutines() {
+  return readData(api.get<ApiResponse<Routine[]>>("/routines"));
+}
+
 export async function createRoutine(input: RoutineInput) {
-  const response = await api.post<ApiResponse<Routine>>("/routines", input);
-  return response.data.data;
+  return readData(api.post<ApiResponse<Routine>>("/routines", input));
 }
