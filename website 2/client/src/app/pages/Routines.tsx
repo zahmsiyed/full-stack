@@ -1,6 +1,5 @@
 import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
-import { LoaderCircle, MoreVertical, Play, Plus } from "lucide-react";
 import { motion } from "motion/react";
 import { Link } from "react-router";
 import { PageHeader } from "../components/PageHeader";
@@ -106,9 +105,8 @@ export function Routines() {
         title="Routines"
         description="Workout templates"
         action={
-          <div className="bg-primary text-primary-foreground rounded-xl px-4 py-2.5 flex items-center gap-2">
-            <Plus className="w-5 h-5" />
-            <span>Create Routine</span>
+          <div className="bg-primary text-primary-foreground rounded-xl px-4 py-2.5">
+            Create Routine
           </div>
         }
       />
@@ -172,7 +170,6 @@ export function Routines() {
               disabled={isSubmitting}
               className="bg-primary text-primary-foreground rounded-xl px-4 py-2.5 flex items-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-60"
             >
-              {isSubmitting ? <LoaderCircle className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
               <span>{isSubmitting ? "Saving..." : "Create Routine"}</span>
             </button>
           </div>
@@ -206,8 +203,8 @@ export function Routines() {
                 <SurfaceCard className="p-6 hover:border-primary/50 transition-all group">
                   <div className="flex items-start justify-between mb-4">
                     <h3 className="text-lg">{routine.name}</h3>
-                    <button className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                      <MoreVertical className="w-5 h-5" />
+                    <button className="text-sm text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                      Options
                     </button>
                   </div>
 
@@ -230,7 +227,6 @@ export function Routines() {
                     to={`/workout/${routine.id}`}
                     className="w-full bg-primary/10 text-primary rounded-xl px-4 py-2.5 flex items-center justify-center gap-2 hover:bg-primary/20 transition-colors"
                   >
-                    <Play className="w-4 h-4" />
                     <span>Start Workout</span>
                   </Link>
                 </SurfaceCard>

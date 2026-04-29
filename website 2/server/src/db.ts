@@ -1,16 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
 import Database from "better-sqlite3";
+import { config } from "./config.js";
 
-const dataDir = path.join(process.cwd(), "data");
+const dataDir = path.dirname(config.databasePath);
 
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
-const dbPath = path.join(dataDir, "fittrack.sqlite");
-
-export const db = new Database(dbPath);
+export const db = new Database(config.databasePath);
 
 db.pragma("journal_mode = WAL");
 

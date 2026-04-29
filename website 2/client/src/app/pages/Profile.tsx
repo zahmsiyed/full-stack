@@ -1,20 +1,21 @@
-import { User, Settings, LogOut, ChevronRight } from "lucide-react";
 import { motion } from "motion/react";
 import { PageHeader } from "../components/PageHeader";
 import { PageShell } from "../components/PageShell";
 import { SurfaceCard } from "../components/SurfaceCard";
+import { getWorkoutHistoryStats } from "../lib/workoutHistory";
 
+const workoutStats = getWorkoutHistoryStats();
 const userStats = [
-  { label: "Total Workouts", value: "24" },
-  { label: "Total Volume", value: "58,900 kg" },
-  { label: "Member Since", value: "Jan 2026" },
-  { label: "Current Streak", value: "7 days" },
+  { label: "Total Workouts", value: String(workoutStats.totalWorkouts) },
+  { label: "Total Volume", value: `${workoutStats.totalVolume.toLocaleString()} kg` },
+  { label: "Member Since", value: workoutStats.memberSince },
+  { label: "Current Streak", value: `${workoutStats.currentStreak} workouts` },
 ];
 
 const settingsOptions = [
-  { label: "Units", value: "Metric (kg)", icon: Settings },
-  { label: "Default Rest Timer", value: "90 seconds", icon: Settings },
-  { label: "Theme", value: "Dark", icon: Settings },
+  { label: "Units", value: "Metric (kg)" },
+  { label: "Default Rest Timer", value: "90 seconds" },
+  { label: "Theme", value: "Dark" },
 ];
 
 export function Profile() {
@@ -30,16 +31,16 @@ export function Profile() {
         <SurfaceCard className="p-6 mb-6">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center">
-              <User className="w-10 h-10 text-primary" />
+              <span className="text-2xl text-primary">Z</span>
             </div>
             <div>
-              <h2 className="text-2xl mb-1">Athlete</h2>
-              <p className="text-muted-foreground">athlete@fittrack.app</p>
+              <h2 className="text-2xl mb-1">Zahm S</h2>
+              <p className="text-muted-foreground">zahmsiyed@fullstack.com</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {userStats.map((stat) => (
+            {userStats.map((stat, index) => (
               <motion.div
                 key={stat.label}
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -70,18 +71,13 @@ export function Profile() {
                 key={option.label}
                 className="w-full p-5 flex items-center justify-between hover:bg-accent transition-colors border-b border-border last:border-b-0"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                    <option.icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="text-left">
-                    <div className="mb-0.5">{option.label}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {option.value}
-                    </div>
+                <div className="text-left">
+                  <div className="mb-0.5">{option.label}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {option.value}
                   </div>
                 </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Edit</span>
               </button>
             ))}
           </div>
@@ -94,7 +90,6 @@ export function Profile() {
         transition={{ duration: 0.4, delay: 0.3 }}
         className="w-full bg-destructive/10 text-destructive rounded-2xl p-5 flex items-center justify-center gap-3 hover:bg-destructive/20 transition-colors"
       >
-        <LogOut className="w-5 h-5" />
         <span>Log Out</span>
       </motion.button>
     </PageShell>

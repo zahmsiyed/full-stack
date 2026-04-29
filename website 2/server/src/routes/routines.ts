@@ -9,37 +9,82 @@ import {
 import type { RoutineInput } from "../types.js";
 
 const router = Router();
+const MAX_NAME_LENGTH = 120;
+const MAX_DURATION_LENGTH = 40;
+const MAX_LAST_PERFORMED_LENGTH = 80;
 
 function parseId(idParam: string) {
   const id = Number(idParam);
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function parseRequiredString(
+  input: Record<string, unknown>,
+  field: string,
+  label: string,
+  maxLength: number
+) {
+  const value = input[field];
+
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return { error: `${label} is required.` };
+  }
+
+  const trimmed = value.trim();
+
+  if (trimmed.length > maxLength) {
+    return { error: `${label} must be ${maxLength} characters or fewer.` };
+  }
+
+  return { value: trimmed };
+}
+
 function parseRoutineInput(body: unknown): { data?: RoutineInput; error?: string } {
-  const input = body as Partial<RoutineInput>;
-
-  if (!input || typeof input.name !== "string" || input.name.trim().length === 0) {
-    return { error: "Routine name is required." };
+  if (!isRecord(body)) {
+    return { error: "Routine payload must be an object." };
   }
 
-  if (typeof input.exercises !== "number" || Number.isNaN(input.exercises) || input.exercises < 1) {
-    return { error: "Exercises must be a number greater than 0." };
+  const name = parseRequiredString(body, "name", "Routine name", MAX_NAME_LENGTH);
+  if (name.error || !name.value) {
+    return { error: name.error };
   }
 
-  if (typeof input.duration !== "string" || input.duration.trim().length === 0) {
-    return { error: "Duration is required." };
+  const exercises = body.exercises;
+
+  if (
+    typeof exercises !== "number" ||
+    !Number.isFinite(exercises) ||
+    !Number.isInteger(exercises) ||
+    exercises < 1
+  ) {
+    return { error: "Exercises must be a positive integer." };
   }
 
-  if (typeof input.lastPerformed !== "string" || input.lastPerformed.trim().length === 0) {
-    return { error: "Last performed is required." };
+  const duration = parseRequiredString(body, "duration", "Duration", MAX_DURATION_LENGTH);
+  if (duration.error || !duration.value) {
+    return { error: duration.error };
+  }
+
+  const lastPerformed = parseRequiredString(
+    body,
+    "lastPerformed",
+    "Last performed",
+    MAX_LAST_PERFORMED_LENGTH
+  );
+  if (lastPerformed.error || !lastPerformed.value) {
+    return { error: lastPerformed.error };
   }
 
   return {
     data: {
-      name: input.name.trim(),
-      exercises: input.exercises,
-      duration: input.duration.trim(),
-      lastPerformed: input.lastPerformed.trim(),
+      name: name.value,
+      exercises,
+      duration: duration.value,
+      lastPerformed: lastPerformed.value,
     },
   };
 }

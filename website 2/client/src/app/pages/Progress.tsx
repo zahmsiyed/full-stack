@@ -10,7 +10,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { TrendingUp, Award, Calendar, Dumbbell } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
 import { PageShell } from "../components/PageShell";
 import { StatCard } from "../components/StatCard";
@@ -42,10 +41,10 @@ const personalRecords = [
 ];
 
 const stats = [
-  { label: "Total Workouts", value: "24", icon: Dumbbell },
-  { label: "Total Volume", value: "58,900", unit: "kg", icon: TrendingUp },
-  { label: "Training Days", value: "24", icon: Calendar },
-  { label: "Personal Records", value: "3", icon: Award },
+  { label: "Total Workouts", value: "24" },
+  { label: "Total Volume", value: "58,900", unit: "kg" },
+  { label: "Training Days", value: "24" },
+  { label: "Personal Records", value: "3" },
 ];
 
 export function Progress() {
@@ -147,10 +146,7 @@ export function Progress() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.4 }}
       >
-        <h2 className="text-xl mb-4 flex items-center gap-2">
-          <Award className="w-5 h-5 text-primary" />
-          Personal Records
-        </h2>
+        <h2 className="text-xl mb-4">Personal Records</h2>
         <div className="space-y-3">
           {personalRecords.map((record, index) => (
             <motion.div

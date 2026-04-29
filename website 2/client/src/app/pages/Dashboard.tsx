@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { Play, Plus, Quote } from "lucide-react";
 import { motion } from "motion/react";
 import { PageHeader } from "../components/PageHeader";
 import { PageShell } from "../components/PageShell";
@@ -50,7 +49,6 @@ export function Dashboard() {
   useEffect(() => {
     let isMounted = true;
 
-    // Keep one simple HTTPS example on the dashboard for the class rubric.
     async function loadQuote() {
       try {
         setQuoteLoading(true);
@@ -89,27 +87,21 @@ export function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <Link
           to="/workout/new"
-          className="group bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl p-6 flex items-center justify-between transition-all"
+          className="group bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl p-6 block transition-all"
         >
           <div>
             <h3 className="text-xl mb-1">Start Workout</h3>
             <p className="text-primary-foreground/80 text-sm">Begin empty workout</p>
           </div>
-          <div className="w-12 h-12 bg-primary-foreground/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Play className="w-6 h-6" />
-          </div>
         </Link>
 
         <Link
           to="/routines"
-          className="group bg-card hover:bg-accent border border-border rounded-2xl p-6 flex items-center justify-between transition-all"
+          className="group bg-card hover:bg-accent border border-border rounded-2xl p-6 block transition-all"
         >
           <div>
             <h3 className="text-xl mb-1">Build Workout Template</h3>
             <p className="text-muted-foreground text-sm">Create routine</p>
-          </div>
-          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Plus className="w-6 h-6 text-primary" />
           </div>
         </Link>
       </div>
@@ -150,9 +142,8 @@ export function Dashboard() {
       </div>
 
       <div className="mt-8">
-        <div className="flex items-center gap-2 mb-4">
-          <Quote className="w-5 h-5 text-primary" />
-          <h2 className="text-xl">HTTPS API Demo</h2>
+        <div className="mb-4">
+          <h2 className="text-xl">Some motivation for you:</h2>
         </div>
 
         {quoteLoading && (

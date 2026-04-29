@@ -30,6 +30,10 @@ export async function fetchRoutines() {
   return readData(api.get<ApiResponse<Routine[]>>("/routines"));
 }
 
+export async function fetchRoutine(id: number) {
+  return readData(api.get<ApiResponse<Routine>>(`/routines/${id}`));
+}
+
 export async function createRoutine(input: RoutineInput) {
   return readData(api.post<ApiResponse<Routine>>("/routines", input));
 }

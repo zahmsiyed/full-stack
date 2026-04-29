@@ -1,64 +1,9 @@
-import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
 import { PageHeader } from "../components/PageHeader";
 import { PageShell } from "../components/PageShell";
 import { SurfaceCard } from "../components/SurfaceCard";
-
-const workoutHistory = [
-  {
-    id: 1,
-    name: "Push Day A",
-    date: "April 9, 2026",
-    time: "14:30",
-    duration: "58 min",
-    volume: "3,240 kg",
-    exercises: [
-      { name: "Barbell Bench Press", sets: "3 sets", reps: "8, 8, 6 reps" },
-      { name: "Incline Dumbbell Press", sets: "3 sets", reps: "12, 10, 8 reps" },
-      { name: "Cable Flyes", sets: "2 sets", reps: "15, 12 reps" },
-    ],
-  },
-  {
-    id: 2,
-    name: "Pull Day B",
-    date: "April 7, 2026",
-    time: "10:15",
-    duration: "52 min",
-    volume: "2,890 kg",
-    exercises: [
-      { name: "Deadlift", sets: "4 sets", reps: "5, 5, 5, 5 reps" },
-      { name: "Lat Pulldown", sets: "3 sets", reps: "12, 10, 10 reps" },
-      { name: "Barbell Row", sets: "3 sets", reps: "10, 8, 8 reps" },
-    ],
-  },
-  {
-    id: 3,
-    name: "Leg Day",
-    date: "April 5, 2026",
-    time: "16:00",
-    duration: "65 min",
-    volume: "4,120 kg",
-    exercises: [
-      { name: "Barbell Squat", sets: "4 sets", reps: "8, 8, 6, 6 reps" },
-      { name: "Romanian Deadlift", sets: "3 sets", reps: "10, 10, 8 reps" },
-      { name: "Leg Press", sets: "3 sets", reps: "15, 12, 12 reps" },
-    ],
-  },
-  {
-    id: 4,
-    name: "Upper Power",
-    date: "April 3, 2026",
-    time: "11:30",
-    duration: "62 min",
-    volume: "3,560 kg",
-    exercises: [
-      { name: "Overhead Press", sets: "4 sets", reps: "8, 6, 6, 5 reps" },
-      { name: "Barbell Bench Press", sets: "3 sets", reps: "6, 6, 5 reps" },
-      { name: "Barbell Row", sets: "3 sets", reps: "8, 8, 6 reps" },
-    ],
-  },
-];
+import { workoutHistory } from "../lib/workoutHistory";
 
 export function History() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
@@ -91,12 +36,9 @@ export function History() {
                       {workout.date} · {workout.time}
                     </p>
                   </div>
-                  <motion.div
-                    animate={{ rotate: expandedId === workout.id ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <ChevronDown className="w-5 h-5 text-muted-foreground" />
-                  </motion.div>
+                  <span className="text-sm text-muted-foreground">
+                    {expandedId === workout.id ? "Hide" : "Show"}
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-4 text-sm">

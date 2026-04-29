@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { ChevronLeft, Plus, Check, X } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
+import { StatusCard } from "../components/StatusCard";
 import { SurfaceCard } from "../components/SurfaceCard";
+import { getErrorMessage } from "../lib/api";
+import { fetchRoutine } from "../lib/routinesApi";
 
 interface WorkoutSet {
   id: number;
@@ -51,8 +53,67 @@ const initialExercises: Exercise[] = [
 ];
 
 export function ActiveWorkout() {
+  const { id } = useParams();
   const [exercises, setExercises] = useState(initialExercises);
   const [duration, setDuration] = useState(0);
+  const [routineName, setRoutineName] = useState("Empty Workout");
+  const [routineLoading, setRoutineLoading] = useState(false);
+  const [routineError, setRoutineError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    setDuration(0);
+    setExercises(initialExercises);
+
+    if (!id || id === "new") {
+      setRoutineName("Empty Workout");
+      setRoutineError(null);
+      setRoutineLoading(false);
+      return () => {
+        isMounted = false;
+      };
+    }
+
+    const routineId = Number(id);
+
+    if (!Number.isInteger(routineId) || routineId < 1) {
+      setRoutineName("Workout");
+      setRoutineError("Workout routine id must be a positive number.");
+      setRoutineLoading(false);
+      return () => {
+        isMounted = false;
+      };
+    }
+
+    async function loadRoutine() {
+      try {
+        setRoutineLoading(true);
+        setRoutineError(null);
+        const routine = await fetchRoutine(routineId);
+
+        if (isMounted) {
+          setRoutineName(routine.name);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setRoutineError(
+            getErrorMessage(error, "Unable to load this workout routine.")
+          );
+          setRoutineName("Workout");
+        }
+      } finally {
+        if (isMounted) {
+          setRoutineLoading(false);
+        }
+      }
+    }
+
+    void loadRoutine();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
 
   useEffect(() => {
     // Keep the workout timer running while this page is open.
@@ -130,118 +191,137 @@ export function ActiveWorkout() {
             <div className="flex items-center gap-4">
               <Link
                 to="/"
-                className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-accent transition-colors"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                <ChevronLeft className="w-5 h-5" />
+                Back
               </Link>
               <div>
-                <h1 className="text-xl">Push Day A</h1>
+                <h1 className="text-xl">{routineName}</h1>
                 <p className="text-sm text-muted-foreground">{formatTime(duration)}</p>
               </div>
             </div>
-            <button className="text-sm text-muted-foreground hover:text-foreground">
-              <X className="w-5 h-5" />
+            <button
+              type="button"
+              aria-label="Cancel workout"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Cancel
             </button>
           </div>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto p-6 space-y-6">
-        {exercises.map((exercise, exerciseIndex) => (
-          <motion.div
-            key={exercise.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: exerciseIndex * 0.1 }}
-          >
-            <SurfaceCard className="p-6">
-              <div className="mb-4">
-                <h3 className="text-lg mb-1">{exercise.name}</h3>
-                <p className="text-sm text-muted-foreground">
-                  Previous: {exercise.previousBest}
-                </p>
-              </div>
+        {routineLoading && (
+          <StatusCard tone="loading" message="Loading workout routine..." />
+        )}
 
-              {/* Keep the sets table simple so each row is easy to scan. */}
-              <div className="space-y-2 mb-4">
-                <div className="grid grid-cols-[40px_1fr_1fr_40px] gap-3 text-sm text-muted-foreground px-2">
-                  <span>Set</span>
-                  <span>Weight (kg)</span>
-                  <span>Reps</span>
-                  <span></span>
-                </div>
+        {routineError && <StatusCard tone="error" message={routineError} />}
 
-                <AnimatePresence>
-                  {exercise.sets.map((set) => (
-                    <motion.div
-                      key={set.id}
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="grid grid-cols-[40px_1fr_1fr_40px] gap-3 items-center"
-                    >
-                      <span className="text-sm text-muted-foreground pl-2">
-                        {set.id}
-                      </span>
-                      <input
-                        type="number"
-                        value={set.weight}
-                        onChange={(event) =>
-                          updateSet(exercise.id, set.id, "weight", event.target.value)
-                        }
-                        className="bg-input rounded-lg px-3 py-2 text-center focus:outline-none focus:ring-2 focus:ring-primary"
-                        disabled={set.completed}
-                      />
-                      <input
-                        type="number"
-                        value={set.reps}
-                        onChange={(event) =>
-                          updateSet(exercise.id, set.id, "reps", event.target.value)
-                        }
-                        className="bg-input rounded-lg px-3 py-2 text-center focus:outline-none focus:ring-2 focus:ring-primary"
-                        disabled={set.completed}
-                      />
-                      <button
-                        onClick={() => toggleSetComplete(exercise.id, set.id)}
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
-                          set.completed
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-input hover:bg-accent"
-                        }`}
-                      >
-                        <motion.div
-                          initial={false}
-                          animate={{ scale: set.completed ? 1 : 0 }}
-                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                        >
-                          <Check className="w-4 h-4" />
-                        </motion.div>
-                      </button>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-
-              <button
-                onClick={() => addSet(exercise.id)}
-                className="w-full bg-input hover:bg-accent rounded-lg px-4 py-2.5 flex items-center justify-center gap-2 transition-colors text-sm"
+        {!routineLoading && !routineError && (
+          <>
+            {exercises.map((exercise, exerciseIndex) => (
+              <motion.div
+                key={exercise.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: exerciseIndex * 0.1 }}
               >
-                <Plus className="w-4 h-4" />
-                <span>Add Set</span>
-              </button>
-            </SurfaceCard>
-          </motion.div>
-        ))}
+                <SurfaceCard className="p-6">
+                  <div className="mb-4">
+                    <h3 className="text-lg mb-1">{exercise.name}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Previous: {exercise.previousBest}
+                    </p>
+                  </div>
 
-        <button className="w-full bg-input hover:bg-accent rounded-2xl px-6 py-4 flex items-center justify-center gap-2 transition-colors border border-dashed border-border">
-          <Plus className="w-5 h-5" />
-          <span>Add Exercise</span>
-        </button>
+                  {/* Keep the sets table simple so each row is easy to scan. */}
+                  <div className="space-y-2 mb-4">
+                    <div className="grid grid-cols-[40px_1fr_1fr_72px] gap-3 text-sm text-muted-foreground px-2">
+                      <span>Set</span>
+                      <span>Weight (kg)</span>
+                      <span>Reps</span>
+                      <span>Done</span>
+                    </div>
+
+                    <AnimatePresence>
+                      {exercise.sets.map((set) => (
+                        <motion.div
+                          key={set.id}
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="grid grid-cols-[40px_1fr_1fr_72px] gap-3 items-center"
+                        >
+                          <span className="text-sm text-muted-foreground pl-2">
+                            {set.id}
+                          </span>
+                          <input
+                            type="number"
+                            value={set.weight}
+                            onChange={(event) =>
+                              updateSet(exercise.id, set.id, "weight", event.target.value)
+                            }
+                            className="bg-input rounded-lg px-3 py-2 text-center focus:outline-none focus:ring-2 focus:ring-primary"
+                            disabled={set.completed}
+                          />
+                          <input
+                            type="number"
+                            value={set.reps}
+                            onChange={(event) =>
+                              updateSet(exercise.id, set.id, "reps", event.target.value)
+                            }
+                            className="bg-input rounded-lg px-3 py-2 text-center focus:outline-none focus:ring-2 focus:ring-primary"
+                            disabled={set.completed}
+                          />
+                          <button
+                            type="button"
+                            aria-label={
+                              set.completed
+                                ? `Mark set ${set.id} incomplete`
+                                : `Mark set ${set.id} complete`
+                            }
+                            onClick={() => toggleSetComplete(exercise.id, set.id)}
+                            className={`h-9 rounded-lg px-2 flex items-center justify-center transition-all text-xs ${
+                              set.completed
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-input hover:bg-accent"
+                            }`}
+                          >
+                            {set.completed ? "Undo" : "Done"}
+                          </button>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => addSet(exercise.id)}
+                    className="w-full bg-input hover:bg-accent rounded-lg px-4 py-2.5 flex items-center justify-center gap-2 transition-colors text-sm"
+                  >
+                    <span>Add Set</span>
+                  </button>
+                </SurfaceCard>
+              </motion.div>
+            ))}
+
+            <button
+              type="button"
+              className="w-full bg-input hover:bg-accent rounded-2xl px-6 py-4 flex items-center justify-center gap-2 transition-colors border border-dashed border-border"
+            >
+              <span>Add Exercise</span>
+            </button>
+          </>
+        )}
       </div>
 
       <div className="sticky bottom-0 bg-gradient-to-t from-background via-background to-transparent p-6 lg:pb-6 pb-24">
         <div className="max-w-4xl mx-auto">
-          <button className="w-full bg-primary text-primary-foreground rounded-2xl px-6 py-4 hover:bg-primary/90 transition-colors shadow-lg">
+          <button
+            type="button"
+            className="w-full bg-primary text-primary-foreground rounded-2xl px-6 py-4 hover:bg-primary/90 transition-colors shadow-lg"
+          >
             Finish Workout
           </button>
         </div>

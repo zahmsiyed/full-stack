@@ -1,5 +1,3 @@
-import type { LucideIcon } from "lucide-react";
-
 export const FADE_IN_ANIMATION = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
@@ -19,6 +17,5 @@ export interface StatCardData {
   label: string;
   value: string;
   unit?: string;
-  icon: LucideIcon;
   change?: string;
 }

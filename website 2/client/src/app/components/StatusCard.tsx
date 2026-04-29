@@ -1,4 +1,3 @@
-import { AlertCircle, LoaderCircle } from "lucide-react";
 import { SurfaceCard } from "./SurfaceCard";
 
 interface StatusCardProps {
@@ -8,7 +7,6 @@ interface StatusCardProps {
 
 export function StatusCard({ tone, message }: StatusCardProps) {
   const isError = tone === "error";
-  const Icon = isError ? AlertCircle : LoaderCircle;
 
   return (
     <SurfaceCard className={isError ? "p-5 border-destructive/30" : "p-5"}>
@@ -17,7 +15,9 @@ export function StatusCard({ tone, message }: StatusCardProps) {
           isError ? "text-destructive" : "text-muted-foreground"
         }`}
       >
-        <Icon className={`w-5 h-5 ${isError ? "" : "animate-spin text-primary"}`} />
+        <span className="text-sm font-medium">
+          {isError ? "Error" : "Loading"}
+        </span>
         <p className="text-sm">{message}</p>
       </div>
     </SurfaceCard>

@@ -1,16 +1,17 @@
 import cors from "cors";
 import express from "express";
 import type { NextFunction, Request, Response } from "express";
+import { config } from "./config.js";
 import { routinesRouter } from "./routes/routines.js";
 
 const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    origin: config.corsOrigins,
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: "100kb" }));
 
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok" });

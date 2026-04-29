@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { Search, Star, Plus } from "lucide-react";
 import { motion } from "motion/react";
 import { PageHeader } from "../components/PageHeader";
 import { PageShell } from "../components/PageShell";
@@ -26,25 +25,15 @@ const exercises = [
 
 interface ExerciseListCardProps {
   category: string;
-  favorite: boolean;
   name: string;
 }
 
-function ExerciseListCard({ category, favorite, name }: ExerciseListCardProps) {
+function ExerciseListCard({ category, name }: ExerciseListCardProps) {
   return (
     <SurfaceCard className="p-4 hover:border-primary/50 transition-all group cursor-pointer">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="mb-1">{name}</h3>
-          <p className="text-sm text-muted-foreground">{category}</p>
-        </div>
-        <Star
-          className={
-            favorite
-              ? "w-5 h-5 text-primary fill-primary"
-              : "w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-          }
-        />
+      <div>
+        <h3 className="mb-1">{name}</h3>
+        <p className="text-sm text-muted-foreground">{category}</p>
       </div>
     </SurfaceCard>
   );
@@ -77,21 +66,19 @@ export function ExerciseLibrary() {
         description="Browse and search exercises"
         action={
           <button className="bg-primary text-primary-foreground rounded-xl px-4 py-2.5 flex items-center gap-2 hover:bg-primary/90 transition-colors">
-            <Plus className="w-5 h-5" />
-            <span className="hidden sm:inline">Add Custom</span>
+            <span>Add Custom</span>
           </button>
         }
       />
 
       <div className="mb-6">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search exercises..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-card rounded-2xl pl-12 pr-4 py-3 border border-border focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full bg-card rounded-2xl px-4 py-3 border border-border focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
       </div>
@@ -114,10 +101,7 @@ export function ExerciseLibrary() {
 
       {favoriteExercises.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-xl mb-4 flex items-center gap-2">
-            <Star className="w-5 h-5 text-primary fill-primary" />
-            Favorites
-          </h2>
+          <h2 className="text-xl mb-4">Favorites</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {favoriteExercises.map((exercise) => (
               <motion.div
@@ -127,7 +111,6 @@ export function ExerciseLibrary() {
               >
                 <ExerciseListCard
                   category={exercise.category}
-                  favorite
                   name={exercise.name}
                 />
               </motion.div>
@@ -150,7 +133,6 @@ export function ExerciseLibrary() {
             >
               <ExerciseListCard
                 category={exercise.category}
-                favorite={false}
                 name={exercise.name}
               />
             </motion.div>
