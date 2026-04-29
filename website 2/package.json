@@ -1,6 +1,9 @@
 {
   "name": "fittrack-monorepo",
   "private": true,
+  "engines": {
+    "node": "20.x"
+  },
   "workspaces": [
     "client",
     "server"
